@@ -1,0 +1,13 @@
+# PyCharm User settings
+.idea/
+
+# VS Code User settings
+.vscode/
+
+# Python Cache
+__pycache__/
+
+dataset/
+
+# model
+model/
