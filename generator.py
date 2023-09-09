@@ -107,8 +107,6 @@ class Generator(nn.Module):
         for i in range(0, max_len):
             if src_[i] == "，":  # 对逗号早期处理
                 next_word = vocab_.char_to_int("，")
-            # elif i > 0 and src_[i] == src_[i - 1]:  # 叠字
-            #     pass
             else:
                 out = self._decode(out_tensor, memory)
                 out = self._classification(out[-1, :])
