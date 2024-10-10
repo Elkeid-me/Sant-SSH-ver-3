@@ -17,18 +17,23 @@ class Config(Singleton):
 
         # dataset path and save path
         if self.on_cluster:
-            self.train_file_path: list[str] = ["/dataset/train_in.json", "/dataset/train_out.json"]
-            self.test_file_path: list[str] = ["/dataset/test_in.json", "/dataset/test_out.json"]
+            self.train_file_path: list[str] = [
+                "/dataset/train_in.json", "/dataset/train_out.json"]
+            self.test_file_path: list[str] = [
+                "/dataset/test_in.json", "/dataset/test_out.json"]
             if self.debug:
                 self.model_save_path: str = "/code/model/model.pkl"
             else:
                 self.model_save_path: str = "/model/model.pkl"
         else:
-            self.train_file_path: list[str] = ["dataset/train_in.json", "dataset/train_out.json"]
-            self.test_file_path: list[str] = ["dataset/test_in.json", "dataset/test_out.json"]
+            self.train_file_path: list[str] = [
+                "dataset/train_in.json", "dataset/train_out.json"]
+            self.test_file_path: list[str] = [
+                "dataset/test_in.json", "dataset/test_out.json"]
             self.model_save_path: str = "model/model.pkl"
 
-        self.vocab_path: list[str] = ["dataset/vocab_char_to_int.json", "dataset/vocab_int_to_char.json"]
+        self.vocab_path: list[str] = [
+            "dataset/vocab_char_to_int.json", "dataset/vocab_int_to_char.json"]
 
         self.d_model: int = 256
         self.nhead: int = 8

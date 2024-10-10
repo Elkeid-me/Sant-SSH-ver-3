@@ -46,7 +46,8 @@ class DataUtils(Singleton):
 
         length: int = len(in_data)
         for index, (in_sentence, out_sentence) in enumerate(zip(in_data, out_data)):
-            in_tensor = torch.tensor([self.char_to_int(char) for char in tokenizer(in_sentence)])
+            in_tensor = torch.tensor([self.char_to_int(char)
+                                     for char in tokenizer(in_sentence)])
             out_tensor = torch.tensor(
                 [self.BOS_INDEX, *[self.char_to_int(char) for char in tokenizer(out_sentence)], self.EOS_INDEX])
             ret_data.append((in_tensor, out_tensor))
@@ -82,10 +83,14 @@ class DataUtils(Singleton):
             -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         src_len = src.shape[0]
         tgt_len = tgt.shape[0]
-        src_mask: torch.Tensor = torch.zeros((src_len, src_len)).type(torch.bool)
-        tgt_mask: torch.Tensor = torch.nn.Transformer.generate_square_subsequent_mask(tgt_len)
-        src_padding_mask: torch.Tensor = (src == self.PAD_INDEX).transpose(0, 1)
-        tgt_padding_mask: torch.Tensor = (tgt == self.PAD_INDEX).transpose(0, 1)
+        src_mask: torch.Tensor = torch.zeros(
+            (src_len, src_len)).type(torch.bool)
+        tgt_mask: torch.Tensor = torch.nn.Transformer.generate_square_subsequent_mask(
+            tgt_len)
+        src_padding_mask: torch.Tensor = (
+            src == self.PAD_INDEX).transpose(0, 1)
+        tgt_padding_mask: torch.Tensor = (
+            tgt == self.PAD_INDEX).transpose(0, 1)
         src_mask = src_mask.to(device)
         tgt_mask = tgt_mask.to(device)
         src_padding_mask = src_padding_mask.to(device)

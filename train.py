@@ -8,7 +8,7 @@ from data_utils import DataUtils
 from generator import Generator
 
 
-def accuracy(model_out: torch.Tensor, tgt_out: torch.Tensor, PAD_INDEX: int) -> (float, int, int):
+def accuracy(model_out: torch.Tensor, tgt_out: torch.Tensor, PAD_INDEX: int) -> tuple[float, int, int]:
     y_pred = model_out.transpose(0, 1).argmax(axis=2).reshape(-1)
     tgt_out = tgt_out.transpose(0, 1).reshape(-1)
     acc = y_pred.eq(tgt_out)
@@ -22,7 +22,7 @@ def accuracy(model_out: torch.Tensor, tgt_out: torch.Tensor, PAD_INDEX: int) -> 
 def evaluate(config_, test_iter, model, data_utils) -> float:
     model.eval()
     correct, totals = 0, 0
-    for idx, (src, tgt) in enumerate(test_iter):
+    for _, (src, tgt) in enumerate(test_iter):
         src = src.to(config_.device)
         tgt = tgt.to(config_.device)
         tgt_input = tgt[:-1, :]
@@ -103,7 +103,8 @@ def train(config_: Config) -> None:
             optimizer.zero_grad()
             tgt_out = tgt[1:, :]
             tgt_out = tgt_out.to(config_.device)
-            loss = loss_fn(model_out.reshape(-1, model_out.shape[-1]), tgt_out.reshape(-1))
+            loss = loss_fn(
+                model_out.reshape(-1, model_out.shape[-1]), tgt_out.reshape(-1))
             loss.backward()
             lr = learning_rate()
             for p in optimizer.param_groups:
@@ -116,8 +117,10 @@ def train(config_: Config) -> None:
                 print(f"    Loss: {loss.item()}, Accuracy: {acc:.3f}")
 
         if epoch % config_.model_save_period == 0:
-            acc = evaluate(config_=config_, test_iter=test_iter, model=generator, data_utils=data_utils)
-            print(f"acc on test {acc:.3f}, max acc on test {max_accuracy_on_test:.3f}")
+            acc = evaluate(config_=config_, test_iter=test_iter,
+                           model=generator, data_utils=data_utils)
+            print(f"acc on test {acc:.3f}, max acc on test {
+                  max_accuracy_on_test:.3f}")
             if acc > max_accuracy_on_test:
                 print("save")
                 max_accuracy_on_test = acc

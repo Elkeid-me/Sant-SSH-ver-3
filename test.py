@@ -28,4 +28,5 @@ if __name__ == "__main__":
         if src == "114514":
             break
         print(f"上联：{src}")
-        print(f"下联：{model.greedy_decode(vocab_=vocab, config_=config, src_=src)}")
+        print(f"下联：{model.greedy_decode(
+            vocab_=vocab, config_=config, src_=src)}")

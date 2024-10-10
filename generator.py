@@ -13,7 +13,8 @@ from vocab import Vocab
 class _TokenEmbedding(nn.Module):
     def __init__(self, vocab_size: int, emb_size: int, device: str):
         super(_TokenEmbedding, self).__init__()
-        self._embedding = nn.Embedding(num_embeddings=vocab_size, embedding_dim=emb_size, device=device)
+        self._embedding = nn.Embedding(
+            num_embeddings=vocab_size, embedding_dim=emb_size, device=device)
         self._sqrt_emb_size = math.sqrt(emb_size)
 
     def forward(self, tokens: torch.Tensor) -> torch.Tensor:
@@ -26,8 +27,10 @@ class _PositionalEncoding(nn.Module):
         self._dropout = nn.Dropout(p=dropout)
 
         pe = torch.zeros((max_len, d_model), device=device)
-        position: torch.Tensor = torch.arange(0, max_len, device=device).unsqueeze(1)
-        div_term = torch.exp(torch.arange(0, d_model, 2, device=device).float() * (-math.log(10000.0) / d_model))
+        position: torch.Tensor = torch.arange(
+            0, max_len, device=device).unsqueeze(1)
+        div_term = torch.exp(torch.arange(
+            0, d_model, 2, device=device).float() * (-math.log(10000.0) / d_model))
 
         pe[:, 0::2] = torch.sin(position * div_term)
         pe[:, 1::2] = torch.cos(position * div_term)
@@ -49,8 +52,10 @@ class Generator(nn.Module):
                  dropout: float, device: str):
         super(Generator, self).__init__()
 
-        self._token_embedding = _TokenEmbedding(vocab_size=vocab_size, emb_size=d_model, device=device)
-        self._position_encoding = _PositionalEncoding(d_model=d_model, dropout=dropout, device=device)
+        self._token_embedding = _TokenEmbedding(
+            vocab_size=vocab_size, emb_size=d_model, device=device)
+        self._position_encoding = _PositionalEncoding(
+            d_model=d_model, dropout=dropout, device=device)
 
         self._transformer = nn.Transformer(d_model=d_model,
                                            nhead=nhead,
@@ -98,11 +103,13 @@ class Generator(nn.Module):
 
     def greedy_decode(self, vocab_: Vocab, config_: Config, src_: str) -> str:
         src_tensor = \
-            torch.tensor([vocab_.char_to_int(char) for char in src_], device=config_.device).reshape(-1, 1)
+            torch.tensor([vocab_.char_to_int(char)
+                         for char in src_], device=config_.device).reshape(-1, 1)
         start_symbol_index: int = vocab_.BOS_INDEX
         max_len: int = len(src_)
         memory = self._encode(src_tensor)
-        out_tensor = torch.tensor([[start_symbol_index]], device=config_.device)
+        out_tensor = torch.tensor(
+            [[start_symbol_index]], device=config_.device)
         next_word, last_word = 0, 0
         for i in range(0, max_len):
             if src_[i] == "，":  # 对逗号早期处理
@@ -124,7 +131,9 @@ class Generator(nn.Module):
                 next_word = next_word.item()
 
             last_word = next_word
-            out_tensor = torch.cat([out_tensor, torch.tensor([[next_word]], device=config_.device)], dim=0)
+            out_tensor = torch.cat([out_tensor, torch.tensor(
+                [[next_word]], device=config_.device)], dim=0)
 
-        out_list: list[str] = [vocab_.int_to_char(index) for index in out_tensor]
+        out_list: list[str] = [vocab_.int_to_char(
+            index) for index in out_tensor]
         return "".join(out_list[1:])
