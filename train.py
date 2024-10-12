@@ -19,7 +19,7 @@ def accuracy(model_out: torch.Tensor, tgt_out: torch.Tensor, PAD_INDEX: int) -> 
     return float(correct) / total, correct, total
 
 
-def evaluate(config_, test_iter, model, data_utils) -> float:
+def evaluate(config_: Config, test_iter, model: Generator, data_utils: DataUtils) -> float:
     model.eval()
     correct, totals = 0, 0
     for _, (src, tgt) in enumerate(test_iter):
@@ -117,10 +117,9 @@ def train(config_: Config) -> None:
                 print(f"    Loss: {loss.item()}, Accuracy: {acc:.3f}")
 
         if epoch % config_.model_save_period == 0:
-            acc = evaluate(config_=config_, test_iter=test_iter,
-                           model=generator, data_utils=data_utils)
-            print(f"acc on test {acc:.3f}, max acc on test {
-                  max_accuracy_on_test:.3f}")
+            acc = evaluate(config_, test_iter, generator, data_utils)
+            print("acc on test {:.3f}, max acc on test {:.3f}".format(
+                acc, max_accuracy_on_test))
             if acc > max_accuracy_on_test:
                 print("save")
                 max_accuracy_on_test = acc
